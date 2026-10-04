@@ -213,7 +213,11 @@ export class ContextVerifier
         domainName(sharingDomain, this.ctx.props.accountId))).hasOwned(collectionId),
       registries.getByName(sharingDomain).isPublic(collectionId),
     ]);
-    return owns || isPublic;
+    if (owns || isPublic) return true;
+    let collections = this.ctx.exports.ContextCollectionDurableObject;
+    let meta = await collections.get(collections.idFromName(
+      domainName(sharingDomain, collectionId))).getMetadata();
+    return !meta.id;
   }
 }
 
